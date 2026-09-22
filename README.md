@@ -51,19 +51,25 @@ pip install -r requirements.txt
 cp credentials.example.json credentials.json     # fill in your AUX/Tornado app email + password
 cp config.example.json config.json               # fill in each person's phone MAC
 
-# 1) start the scanner (leave it running; --once for a single scan)
+# 1) identify each phone's MAC: print who's on the LAN now (writes nothing).
+#    Toggle a phone's Wi-Fi off/on and re-run to spot its address.
+python lan_scanner.py --list
+
+# 2) start the scanner (leave it running; --once for a single scan)
 python lan_scanner.py --db presence.sqlite3 --interval 120
 
-# 2) discover your ACs and copy each id into config.json's "ac_id" fields
+# 3) discover your ACs and copy each id into config.json's "ac_id" fields
 python ac_offline_guard.py --config config.json --discover
 
-# 3) run the guard (dry-run first; watch the log / ac_guard_state.sqlite3 command_log)
+# 4) run the guard (dry-run first; watch the log / ac_guard_state.sqlite3 command_log)
 python ac_offline_guard.py --config config.json
 ```
 
-Finding a phone's home‑network MAC: on the phone, open the Wi‑Fi network details — the "private
-address" / "randomized MAC" shown there is the stable per‑network address to put in `phone_mac`
-(it stays constant for this network even though it differs from the hardware MAC).
+Finding a phone's home‑network MAC: run `python lan_scanner.py --list` to see every device on the LAN
+(MAC, IP, hostname, and whether the address is a phone‑style "private/randomized" one) — toggle the
+phone's Wi‑Fi off then on and re‑run to see which address drops and returns. You can also read it on
+the phone itself: the Wi‑Fi network's "private address" / "randomized MAC" is the stable per‑network
+address to put in `phone_mac` (constant for this network, though it differs from the hardware MAC).
 
 ### Going live
 

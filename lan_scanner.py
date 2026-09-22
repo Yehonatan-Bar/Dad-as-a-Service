@@ -135,6 +135,30 @@ def scan_once(subnet: Optional[ipaddress.IPv4Network], *, sweep: bool, resolve: 
     return seen
 
 
+def _ip_sort_key(ip: Optional[str]) -> tuple:
+    if not ip:
+        return (1, 0)
+    try:
+        return (0, int(ipaddress.ip_address(ip)))
+    except ValueError:
+        return (1, 0)
+
+
+def print_devices(seen: dict[str, dict[str, Optional[str]]]) -> None:
+    """Print everything currently on the LAN, to help identify which MAC is which phone. Writes
+    nothing to the database."""
+    if not seen:
+        print("No devices found. Try without --no-sweep, or run with enough privileges to read the neighbour table.")
+        return
+    print(f"{'MAC':<19} {'IP':<16} {'HOSTNAME':<28} NOTE")
+    print(f"{'-' * 19} {'-' * 16} {'-' * 28} {'-' * 18}")
+    for mac, info in sorted(seen.items(), key=lambda kv: _ip_sort_key(kv[1].get("ip"))):
+        note = "private/randomized" if presence.is_locally_administered(mac) else ""
+        print(f"{mac:<19} {(info.get('ip') or ''):<16} {(info.get('hostname') or ''):<28} {note}")
+    print(f"\n{len(seen)} device(s). Tip: toggle a phone's Wi-Fi off then on and re-run --list to spot")
+    print("its address (a phone is usually a 'private/randomized' one) - put that MAC in phone_mac.")
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="LAN presence scanner -> local SQLite for the AC offline guard.")
     parser.add_argument("--db", default=DEFAULT_DB, help=f"SQLite database path (default {DEFAULT_DB})")
@@ -143,6 +167,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--no-sweep", action="store_true", help="do not ping the subnet first (rely on the neighbour table as is)")
     parser.add_argument("--no-resolve", action="store_true", help="do not look up hostnames")
     parser.add_argument("--once", action="store_true", help="one scan, then exit")
+    parser.add_argument("--list", action="store_true", help="print the devices on the LAN now and exit (identify a phone's MAC); writes nothing")
     args = parser.parse_args(argv)
 
     for stream in (sys.stdout, sys.stderr):
@@ -161,6 +186,10 @@ def main(argv: Optional[list[str]] = None) -> int:
                 subnet = default_subnet()
         else:
             subnet = default_subnet()
+
+    if args.list:
+        print_devices(scan_once(subnet, sweep=not args.no_sweep, resolve=not args.no_resolve))
+        return 0
 
     conn = presence.connect(args.db)
     presence.init_db(conn)
