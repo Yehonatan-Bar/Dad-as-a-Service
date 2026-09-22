@@ -1,6 +1,7 @@
-# ac-offline-guard
+# Dad-as-a-Service
 
-Turn off an air conditioner automatically when the person it belongs to leaves the home Wi‑Fi.
+*The dad who turns off the AC after you leave.* Automatically powers off an air conditioner when the
+person it belongs to has been off the home Wi‑Fi longer than a threshold (15 minutes by default).
 
 A small, self‑contained tool: a LAN scanner watches which phones are on the home network, and a guard
 powers off a mapped [Tornado / AUX](https://en.wikipedia.org/wiki/AUX_Group) (BroadLink DNA cloud) air
