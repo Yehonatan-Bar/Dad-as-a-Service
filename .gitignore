@@ -1,0 +1,15 @@
+# Secrets and local config — never commit these
+credentials.json
+config.json
+
+# Local databases the scanner and guard write
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/

@@ -1,0 +1,2 @@
+# The cloud client's login uses AES-CBC via cryptography. Everything else is standard library.
+cryptography>=41

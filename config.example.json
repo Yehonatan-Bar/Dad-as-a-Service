@@ -1,0 +1,25 @@
+{
+  "_comment": "Copy to config.json and fill in ac_id after running --discover. config.json, credentials.json and *.sqlite3 are git-ignored.",
+  "credentials_file": "credentials.json",
+  "presence_db": "presence.sqlite3",
+  "state_db": "ac_guard_state.sqlite3",
+  "region": "usa",
+  "poll_interval_seconds": 60,
+  "max_coverage_gap_seconds": 300,
+  "default_offline_minutes": 15,
+  "mode": "dry-run",
+  "acknowledge_live_control": false,
+  "allow_power_on": false,
+  "rules": [
+    {
+      "rule_id": "person1",
+      "person": "Person One",
+      "phone_mac": "aa:bb:cc:dd:ee:ff",
+      "ac_id": "REPLACE_WITH_CLOUD_DEVICE_ID",
+      "ac_label": "Bedroom AC",
+      "offline_minutes": 15,
+      "mode": "dry-run",
+      "enabled": true
+    }
+  ]
+}
